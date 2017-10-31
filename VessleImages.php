@@ -48,13 +48,15 @@ class VessleImages {
 
     function saveFile($vessle) {
         try {
+
             $this->response = $this->client->request('GET', 'http://photos.marinetraffic.com/ais/showphoto.aspx?mmsi=' . $vessle['mmsi'] . '&size=');
-            $this->output($this->response->getHeader('Content-Type'));
-            if ($this->response->getHeader('Content-Type') == 'image/jpeg') {
+            $type = $this->response->getHeader('Content-Type'); 
+            $this->output($type[0]);
+            if ($type[0] == 'image/jpeg') {
                 $name = 'b_' . $vessle['id'] . '.jpg';
                 $saveto = $this->path . $name;
                 $file = fopen($saveto, 'w');
-                fwrite($file, $response->getBody());
+                fwrite($file, $this->response->getBody());
                 fclose($file);
                 $this->sucess = true;
                 $this->vessle['barco_foto'] = $name;
@@ -64,7 +66,7 @@ class VessleImages {
             }
         } catch (Exception $e) {
             $this->sucess = false;
-            $this->errors[] = "content type of fetch image problem";
+            $this->errors[] = "erro geral no save file";
             $this->errors[] = $e->getMessage();
         }
     }
